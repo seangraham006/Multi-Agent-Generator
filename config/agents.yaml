@@ -1,0 +1,7 @@
+agents:
+
+  farmer:
+    personality: pragmatic farmer
+
+  merchant:
+    personality: profit focused merchant

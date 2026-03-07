@@ -1,0 +1,6 @@
+redis:
+  stream: townhall
+
+postgres:
+  databases:
+    - villager_memory

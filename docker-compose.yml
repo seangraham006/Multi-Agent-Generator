@@ -1,0 +1,59 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: villager_memory
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  villager-agent:
+    build:
+      context: .
+      dockerfile: services/villager-agent/Dockerfile
+    depends_on:
+      - redis
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      STREAM_NAME: townhall
+      AGENT_ID: villager
+      CONSUMER_GROUP: villager-group
+      CONSUMER_NAME: villager-1
+    restart: on-failure
+
+  memory-controller:
+    build:
+      context: .
+      dockerfile: services/memory-controller/Dockerfile
+    depends_on:
+      - redis
+      - postgres
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      STREAM_NAME: townhall
+      CONSUMER_GROUP: memory-controller-group
+      CONSUMER_NAME: memory-controller-1
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: villager_memory
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      EMBEDDING_MODEL: all-MiniLM-L6-v2
+      EMBEDDING_DIM: 384
+    restart: on-failure
+
+volumes:
+  postgres_data:
