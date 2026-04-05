@@ -15,6 +15,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy shared modules
 COPY shared/ /service/shared/
 
+# Copy config
+COPY config/ /service/config/
+
 # Copy application code
 COPY services/memory-controller/app/ /service/app/
 

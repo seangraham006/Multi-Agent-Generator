@@ -20,7 +20,7 @@ from app.config import (
 )
 from app.embedding_service import generate_embedding
 from app.memory_service import process_event
-from app.postgres_client import get_connection, store_memory
+from app.postgres_client import get_connection
 from shared.events.schema import Event
 
 logging.basicConfig(
@@ -91,15 +91,12 @@ def main() -> None:
 
     pg_conn = get_connection()
 
-    def _store(agent_id: str, content: str, embedding: list[float], memory_type: str) -> str:
-        return store_memory(pg_conn, agent_id, content, embedding, memory_type)
-
     while _running:
         try:
             events = _read_batch(redis_client)
             for message_id, event in events:
                 try:
-                    process_event(event, store_fn=_store, embed_fn=generate_embedding)
+                    process_event(event, conn=pg_conn, embed_fn=generate_embedding)
                 except Exception:
                     logger.exception(
                         "Failed to process event %s – skipping", event.event_id

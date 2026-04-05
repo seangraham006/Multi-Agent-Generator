@@ -1,5 +1,6 @@
 redis:
-  stream: townhall
+  streams:
+    - townhall
 
 postgres:
   databases:

@@ -36,12 +36,21 @@ Responsible for:
 
 ### Memory Controller Service
 
-Responsible for:
+Modelled after the **Mem0** framework (*Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory*), which provides scalable memory management through a structured update pipeline.
 
-- Evaluating events
-- Deciding if events should become long term memory
-- Storing memories
-- Generating summaries
+The memory lifecycle consists of two phases:
+
+**Extract phase** — When an event is received, relevant information is extracted and compared against existing memories using vector similarity search.
+
+**Update phase** — Based on the comparison, one of four operations is applied to the memory store:
+- **ADD** — new information not present in existing memories
+- **UPDATE** — existing memory is revised with new or corrected information
+- **DELETE** — memory is no longer relevant and is removed
+- **NOOP** — no change required; existing memory already captures the information
+
+After the update phase, a **summary** is generated to provide a condensed, human-readable view of the agent's current memory state.
+
+This approach ensures the memory store stays accurate and non-redundant over time, rather than growing unbounded.
 
 ### PostgreSQL + pgvector
 

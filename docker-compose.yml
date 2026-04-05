@@ -40,6 +40,8 @@ services:
     depends_on:
       - redis
       - postgres
+    env_file:
+      - .env
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
@@ -53,6 +55,9 @@ services:
       POSTGRES_PASSWORD: postgres
       EMBEDDING_MODEL: all-MiniLM-L6-v2
       EMBEDDING_DIM: 384
+      MISTRAL_MODEL: mistral-small-latest
+      SIMILARITY_TOP_K: 5
+      MAX_MEMORIES_PER_AGENT: 100
     restart: on-failure
 
 volumes:
